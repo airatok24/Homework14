@@ -14,7 +14,7 @@ def main():
         connection.close()
         return result
 
-    @app.route('/movie/<title>')
+    @app.route('/film/<title>', methods=["GET"])
     def search_by_title(title):
         query = f""" 
                 SELECT
@@ -28,17 +28,20 @@ def main():
                 ORDER BY release_year DESC
                 LIMIT 1
                 """
-        response = db_connection(query)[0]
-        response_json = {
+        if len(db_connection(query)[0]) >=1:
+            response = db_connection(query)[0]
+            response_json = {
             'title': response[0],
             'country': response[1],
             'release_year': response[2],
             'genre': response[3],
             'description': response[4]
         }
-        return jsonify(response_json)
+            return jsonify(response_json)
+        else:
+            return 'Выберите фильм'
 
-    @app.route('/movie/<int:start>/to/<int:end>')
+    @app.route('/movies/<int:start>/to/<int:end>', methods=["GET"])
     def search_by_period(start, end):
         query = f""" 
                 SELECT
@@ -57,7 +60,7 @@ def main():
             })
         return jsonify(response_json)
 
-    @app.route('/rating/<group>')
+    @app.route('/rating/<group>', methods=["GET"])
     def search_by_rating(group):
         levels = {
             'children': ['G'],
@@ -88,7 +91,8 @@ def main():
             })
         return jsonify(response_json)
 
-    @app.route('/genre/<genre>')
+
+    @app.route('/genre/<genre>', methods=["GET"])
     def search_by_genre(genre):
         query = f""" 
                     SELECT
@@ -103,16 +107,13 @@ def main():
         response_json = []
         for film in response:
             response_json.append({
-                'title': film[0],
-                'description': film[1]
-            })
+            'title': film[0],
+            'description': film[1]
+        })
         return jsonify(response_json)
 
 
-
-
     app.run()
-
 
 if __name__ == '__main__':
     main()
