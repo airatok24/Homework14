@@ -28,7 +28,7 @@ def main():
                 ORDER BY release_year DESC
                 LIMIT 1
                 """
-        if len(db_connection(query)[0]) >=1:
+        if len(db_connection(query)) >=1:
             response = db_connection(query)[0]
             response_json = {
             'title': response[0],
@@ -39,7 +39,7 @@ def main():
         }
             return jsonify(response_json)
         else:
-            return 'Выберите фильм'
+            return 'Такой фильм отсутвует в базе. Выберите другой фильм'
 
     @app.route('/movies/<int:start>/to/<int:end>', methods=["GET"])
     def search_by_period(start, end):
